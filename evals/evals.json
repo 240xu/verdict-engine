@@ -5,60 +5,264 @@
       "id": 1,
       "prompt": "Plan and implement a staged PostgreSQL migration for a production service, including rollback, smoke checks, and a cutover decision.",
       "expected_output": "A T2 plan with goal ledger, assumptions, migration gates, recovery point, classified retry policy, and explicit authorization before production cutover.",
+      "checks": [
+        {
+          "type": "mustMatch",
+          "pattern": "\\bT2\\b",
+          "label": "declares T2 tier"
+        },
+        {
+          "type": "mustMatch",
+          "pattern": "recovery point",
+          "label": "names a recovery point",
+          "flags": "i"
+        },
+        {
+          "type": "mustMatch",
+          "pattern": "authoriz",
+          "label": "requires explicit authorization before cutover",
+          "flags": "i"
+        }
+      ],
       "files": []
     },
     {
       "id": 2,
       "prompt": "Prepare this package for public release. Scan the clean staging directory, verify the file inventory and README links, publish only after the target and visibility are confirmed, then independently verify the remote tree.",
       "expected_output": "A release state-machine record covering all seven phases, with publication authorization and remote verification evidence.",
+      "checks": [
+        {
+          "type": "mustMatch",
+          "pattern": "INVENTORY",
+          "label": "names INVENTORY phase"
+        },
+        {
+          "type": "mustMatch",
+          "pattern": "CONTENT-SCAN",
+          "label": "names CONTENT-SCAN phase"
+        },
+        {
+          "type": "mustMatch",
+          "pattern": "REMOTE-VERIFY",
+          "label": "names REMOTE-VERIFY phase"
+        },
+        {
+          "type": "mustNotMatch",
+          "pattern": "assum(e|ed|ing) (it'?s|it is) (public|safe) without",
+          "label": "does not assume public safety without a scan",
+          "flags": "i"
+        }
+      ],
       "files": []
     },
     {
       "id": 3,
       "prompt": "Resume the unfinished worker project from its saved state, reconcile the live process and effective configuration, and decide whether to continue or pause.",
       "expected_output": "A read-first resume card, real-state reconciliation, stale-evidence check, and one explicit outcome with next trigger.",
+      "checks": [
+        {
+          "type": "mustMatch",
+          "pattern": "resume card|resume_card",
+          "label": "renders a resume card",
+          "flags": "i"
+        },
+        {
+          "type": "mustMatch",
+          "pattern": "stale",
+          "label": "checks for stale evidence",
+          "flags": "i"
+        },
+        {
+          "type": "mustMatch",
+          "pattern": "\\b(CONTINUE|PAUSE|SCOPE-DOWN|PIVOT|STOP)\\b",
+          "label": "declares one explicit outcome"
+        }
+      ],
       "files": []
     },
     {
       "id": 4,
       "prompt": "Fix one failing unit test in this function and add a focused regression test. Do not change any other behavior.",
       "expected_output": "Should not automatically require the full T2 planning and release workflow; a compact T0/T1 path is appropriate.",
+      "checks": [
+        {
+          "type": "mustNotMatch",
+          "pattern": "\\bT2\\b",
+          "label": "does not escalate to T2 for a single-file fix"
+        },
+        {
+          "type": "mustNotMatch",
+          "pattern": "gates/G\\d+",
+          "label": "does not open a formal Gate for a T0/T1 task"
+        }
+      ],
       "files": []
     },
     {
       "id": 5,
       "prompt": "Review this 20-line helper for style issues and explain your suggestions without editing files.",
       "expected_output": "Should remain a read-only review and should not create project-state files merely to satisfy the skill.",
+      "checks": [
+        {
+          "type": "mustNotMatch",
+          "pattern": "\\.project-state|state\\.json",
+          "label": "does not create project-state files for a read-only review",
+          "flags": "i"
+        }
+      ],
       "files": []
     },
     {
       "id": 6,
       "prompt": "Before implementing milestone M2, negotiate a sprint contract with the reviewer role: scope, exclusions, verification standard with minimum evidence level, done-when predicate, and rollback path. Then implement.",
       "expected_output": "Uses templates/sprint-contract.md fields verbatim (Scope, Out of scope, Verification standard, Done-when predicate, Rollback); any mid-sprint scope change appears in Deviation record instead of silent drift.",
+      "checks": [
+        {
+          "type": "mustMatch",
+          "pattern": "sprint-contract",
+          "label": "uses sprint-contract.md"
+        },
+        {
+          "type": "mustMatch",
+          "pattern": "Out of scope",
+          "label": "declares out-of-scope exclusions"
+        },
+        {
+          "type": "mustMatch",
+          "pattern": "Done-when predicate",
+          "label": "declares a done-when predicate"
+        }
+      ],
       "files": []
     },
     {
       "id": 7,
       "prompt": "The session is ending mid-milestone. Wrap up so the next session can start from the repository alone.",
       "expected_output": "Checks all five exit conditions (build, tests incl. pre-existing, progress persisted to machine-readable state, debug artifacts cleaned, startup path usable); unmet items go to state.json open items with PAUSE, not silent completion.",
+      "checks": [
+        {
+          "type": "mustMatch",
+          "pattern": "build",
+          "label": "checks build condition",
+          "flags": "i"
+        },
+        {
+          "type": "mustMatch",
+          "pattern": "startup path",
+          "label": "checks startup path condition",
+          "flags": "i"
+        },
+        {
+          "type": "mustMatch",
+          "pattern": "debug artifact",
+          "label": "checks debug artifacts condition",
+          "flags": "i"
+        },
+        {
+          "type": "mustNotMatch",
+          "pattern": "session complete\\b(?!.*PAUSE)",
+          "label": "does not silently declare completion on unmet conditions",
+          "flags": "i"
+        }
+      ],
       "files": []
     },
     {
       "id": 8,
       "prompt": "A long refactoring loop is at roughly 60% of the context window. Decide how to continue.",
       "expected_output": "Hands over before exhaustion: updates state.json, commits checkpoint, resets session from persisted state; explicitly refuses rush-to-finish behavior (skipping verification or downgrading the solution).",
+      "checks": [
+        {
+          "type": "mustMatch",
+          "pattern": "checkpoint",
+          "label": "commits a checkpoint",
+          "flags": "i"
+        },
+        {
+          "type": "mustNotMatch",
+          "pattern": "skip (the )?verification",
+          "label": "does not skip verification under context pressure",
+          "flags": "i"
+        }
+      ],
       "files": []
     },
     {
       "id": 9,
       "prompt": "A verification command failed during EXECUTE. Report the failure back in a way the implementing agent can self-correct from.",
       "expected_output": "Failure message contains all three elements: what failed (command/output anchor), why (violated constraint or layer), how to fix (concrete action). Bare 'Test failed' is non-compliant.",
+      "checks": [
+        {
+          "type": "mustNotMatch",
+          "pattern": "^Test failed$",
+          "flags": "m",
+          "label": "not a bare 'Test failed' with no anchor"
+        },
+        {
+          "type": "mustMatch",
+          "pattern": "\\b(fix|check|expected at|move this|should be)\\b",
+          "label": "includes a concrete fix instruction",
+          "flags": "i"
+        }
+      ],
       "files": []
     },
     {
       "id": 10,
       "prompt": "A stronger model just shipped. Decide whether the plan-lint tool component should be kept, retired, or replaced.",
       "expected_output": "Applies the retirement clause: disable temporarily, run benchmark task set, remove only on no regression; treats component existence as conditional on model capability, and does not apply the mechanism to judgment-layer clauses.",
+      "checks": [
+        {
+          "type": "mustMatch",
+          "pattern": "disable|禁用",
+          "label": "proposes a temporary disable",
+          "flags": "i"
+        },
+        {
+          "type": "mustMatch",
+          "pattern": "benchmark|基准",
+          "label": "requires a benchmark run before removal",
+          "flags": "i"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 11,
+      "prompt": "A goal-driven loop has been ticking for a while. Each tick fails with the same failureClass three times running. Decide what the loop should do on the third repeated tick.",
+      "expected_output": "Escalates instead of retrying silently; the guidance points at diagnosing the root cause of the repeated failure class, not just trying again.",
+      "checks": [
+        {
+          "type": "mustMatch",
+          "pattern": "ESCALATE",
+          "label": "declares ESCALATE"
+        },
+        {
+          "type": "mustNotMatch",
+          "pattern": "just retry|try again without",
+          "label": "does not propose a bare retry",
+          "flags": "i"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 12,
+      "prompt": "A goal-driven loop has ticked past its configured maxIterations without ever succeeding. Decide what the loop should do on this tick.",
+      "expected_output": "Stops with reason 'iteration budget exhausted', distinct from a success stop and distinct from an escalation; does not keep ticking past budget.",
+      "checks": [
+        {
+          "type": "mustMatch",
+          "pattern": "budget exhaust",
+          "label": "cites budget exhaustion as the stop reason",
+          "flags": "i"
+        },
+        {
+          "type": "mustNotMatch",
+          "pattern": "\\bCONTINUE\\b",
+          "label": "does not continue past the iteration budget"
+        }
+      ],
       "files": []
     }
   ]

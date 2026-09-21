@@ -171,7 +171,47 @@ export function registerProgressTools(defineTool, core) {
       return renderEnvelope(applyProtocol(okEnvelope('exit_check', enriched), args, 'exit_check'));
     });
   });
+  register('tech_lead_loop_tick', 'Decide whether a governed loop should CONTINUE, STOP, or ESCALATE for one tick (SKILL §4.10, nomos-loop). Mechanizes existing planning-loop prose: success stops as goal achieved; exceeding maxIterations (default 20) stops as budget exhausted; the same failureClass three ticks running escalates instead of retrying silently. This tool never schedules or runs anything — an external Automation (cron/DSH routine/GitHub Action) calls it once per tick and persists updatedLoopState (e.g. into state.json.loop) for the next call. ESCALATE carries data.guidance.nextActions.', {
+    loopSpecJson: { type: 'string', description: 'optional JSON text ({maxIterations?:number}); default maxIterations is 20' },
+    loopStateJson: { type: 'string', required: true, description: 'previous tick state JSON text {iteration?,sameFailureClassCount?,lastFailureClass?}; {} for a fresh loop' },
+    observationJson: { type: 'string', required: true, description: 'this tick result JSON text {success?:boolean,failureClass?:string}' },
+    optionsJson: { type: 'string', description: 'optional JSON text ({guidanceMode?:string})' },
+  }, async (args) => {
+    return runGuarded('loop_tick', () => {
+      const input = parseJsonFields(args ?? {}, ['loopSpecJson', 'loopStateJson', 'observationJson']);
+      if (!input.ok) return renderEnvelope(applyProtocol(errorEnvelope('loop_tick', input.code ?? 'BAD_INPUT', input.errors), args, 'loop_tick'));
+      let mode = 'strict';
+      if (args.optionsJson != null && args.optionsJson !== '') {
+        const parsedOptions = parseOptions(args.optionsJson, 'loop_tick');
+        if (!parsedOptions.ok) return renderEnvelope(applyProtocol(errorEnvelope('loop_tick', parsedOptions.code ?? 'BAD_INPUT', parsedOptions.errors), args, 'loop_tick'));
+        if (parsedOptions.value.guidanceMode) mode = parsedOptions.value.guidanceMode;
+      }
+      const result = core.loopTick(input.values.loopSpecJson, input.values.loopStateJson, input.values.observationJson);
+      if (result.decision === 'CONTINUE' || result.decision === 'STOP') {
+        return renderEnvelope(applyProtocol(okEnvelope('loop_tick', result), args, 'loop_tick'));
+      }
+      const enriched = { ...result, guidance: buildLoopGuidance(result, mode) };
+      return renderEnvelope(applyProtocol(okEnvelope('loop_tick', enriched), args, 'loop_tick'));
+    });
+  });
   return output;
+}
+
+function buildLoopGuidance(result, mode) {
+  const actions = [makeAction({
+    kind: 'hygiene',
+    targetId: 'loop',
+    reasonCodes: ['SAME_FAILURE_CLASS_ESCALATED'],
+    findingRef: 'updatedLoopState/lastFailureClass',
+    action: `Stop retrying failure class "${result.updatedLoopState.lastFailureClass}" unchanged; diagnose the root cause or run a smaller falsifying experiment before the next tick.`,
+    doneWhen: 'the next observation reports success:true or a different failureClass',
+  })];
+  return normalizeGuidance({
+    mode,
+    outcome: 'PAUSE',
+    meaning: result.reason,
+    actions,
+  });
 }
 
 const EXIT_FIX = {

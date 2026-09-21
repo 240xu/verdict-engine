@@ -8,6 +8,7 @@ import {
   progressDecide, criticalPath, changeImpact,
   gatePlan, gateAggregate, gateReopen, previewMutation,
   exitCheck,
+  loopTick,
 } from './core/index.js';
 import { registerTools } from './tools.js';
 
@@ -29,6 +30,7 @@ export function apply(ctx) {
     progressDecide, criticalPath, changeImpact,
     gatePlan, gateAggregate, gateReopen, previewMutation,
     exitCheck,
+    loopTick,
     getCapabilities,
   })) {
     ctx.tools.register(tool);
