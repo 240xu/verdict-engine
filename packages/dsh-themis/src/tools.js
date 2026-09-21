@@ -251,7 +251,7 @@ export function registerTools(defineTool, core) {
     // be reused by callers that supply only the original core surface.
     tools.push(...registerContextTools(def, core));
   }
-  if (core.progressDecide && core.criticalPath && core.changeImpact) {
+  if (core.progressDecide && core.criticalPath && core.changeImpact && core.exitCheck) {
     tools.push(...registerProgressTools(def, core));
   }
   if (core.gatePlan && core.gateAggregate && core.gateReopen) {

@@ -83,7 +83,7 @@ npx nomos-skill
 dsh plugin --profile headless add dsh-themis
 ```
 
-单包注册 22 个入口：21 个只读治理工具（原九项审计＋上下文校验、证据图/新鲜度分析、推进决策、关键路径/影响分析、续跑对账、Gate 计划/聚合/重开、变更预览）＋能力发现工具 `tech_lead_capabilities`（只列出本包实际注册的工具）。仅对调用方传入的 JSON 做计算——无文件写入、无子进程、无网络访问。旧拆分包（`dsh-tech-lead-{core,plugin,bundle}`）已弃用并指向本包。源码安装：`node scripts/build-market-package.mjs` 装配后 `dsh plugin add packages/dsh-themis`。根 npm 包只发布技能与安装器。
+单包注册 23 个入口：22 个只读治理工具（原九项审计＋上下文校验、证据图/新鲜度分析、推进决策、关键路径/影响分析、续跑对账、Gate 计划/聚合/重开、变更预览、会话退出五条件检查）＋能力发现工具 `tech_lead_capabilities`（只列出本包实际注册的工具）。仅对调用方传入的 JSON 做计算——无文件写入、无子进程、无网络访问。旧拆分包（`dsh-tech-lead-{core,plugin,bundle}`）已弃用并指向本包。源码安装：`node scripts/build-market-package.mjs` 装配后 `dsh plugin add packages/dsh-themis`。根 npm 包只发布技能与安装器。
 
 **两个产物，同一套规范：** `nomos-skill`（Verdict Engine 纯文本版）是保守、广泛兼容的纯文本规范——装进任何 agent 环境（opencode/Claude Code/Codex）即可，无其他依赖。**`dsh-themis` 是 DSH 插件专项优化版**：同样的判断层外加机器可校验的只读运行时——全部 22 工具在 schema 中声明 `protocolJson`（legacy 默认裸形态、显式请求 v1/v2 信封、未知取值 fail-closed）、state→context-v2 单向投影（身份与来源永不虚构）、strict/compat 输入兼容模式，以及稳定的 v2 信封（`findings`/`guidance`/`meta.complete`/`meta.outputProtocol`）。
 
@@ -178,6 +178,6 @@ dsh --profile headless --dump-config   # 确认 tech-lead-tools 行已注入
 
 ## 版本
 
-当前版本：`v5.5.8`.
+当前版本：`v5.5.9`.
 
 完整运行模型见[技术指南](./docs/TECHNICAL_GUIDE.zh-CN.md)，发布审计见 [docs/AUDIT_REPORT.md](docs/AUDIT_REPORT.md)。

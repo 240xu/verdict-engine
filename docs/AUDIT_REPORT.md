@@ -75,3 +75,14 @@ process-observability, session-exit, context-budget, and component-lifecycle gap
 Residual risks: the new eval scenarios still rely on human review of
 `expected_output`; no automated scoring rubric exists yet. The retirement clause
 has no mechanical benchmark harness behind it — execution remains procedural.
+
+## Amendment 2026-09-21b (v5.5.9 · tech_lead_exit_check)
+
+- New read-only tool `tech_lead_exit_check` (dsh-themis 1.4.0, core 0.3.1):
+  mechanical verdict for the SKILL §7 session-exit five conditions
+  (build / verification / progress persisted / artifacts clean / startup
+  path). Unreported checks fail closed ("unknown" counts as unmet); dirty
+  verdicts carry deterministic guidance nextActions with doneWhen predicates.
+- Tool surface 22 → 23; count assertions updated across 9 test locations.
+- dsh-themis regenerated via scripts/build-market-package.mjs (9 references).
+- Full suite green: 263 tests, 0 failures.
