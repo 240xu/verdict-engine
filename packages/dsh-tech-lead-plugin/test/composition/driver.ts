@@ -156,7 +156,7 @@ const cases: Case[] = [
   {
     tool: 'tech_lead_capabilities',
     args: {},
-    expect: (r) => r.ok === true && r.data.capabilities.length === 22,
+    expect: (r) => r.ok === true && r.data.capabilities.length === 23,
   },
 ]
 

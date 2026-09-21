@@ -69,3 +69,33 @@ test('scalar-root drift reports an explicit root key', async () => {
   }));
   assert.deepEqual(r.data.changedKeys, ['<root>']);
 });
+
+test('exit check tool is registered', () => {
+  assert.ok(tool('tech_lead_exit_check'));
+});
+
+test('exit check returns EXIT_CLEAN for a persisted state with all checks true', async () => {
+  const result = JSON.parse(await tool('tech_lead_exit_check').execute({
+    stateJson: JSON.stringify({ updated_at: '2026-09-21T00:00:00Z' }),
+    checksJson: JSON.stringify({ buildPassed: true, verificationGreen: true, debugArtifactsClean: true, startupPathUsable: true }),
+  }));
+  assert.equal(result.ok, true);
+  assert.equal(result.data.verdict, 'EXIT_CLEAN');
+});
+
+test('exit check fails closed on unreported checks and carries guidance', async () => {
+  const result = JSON.parse(await tool('tech_lead_exit_check').execute({
+    stateJson: JSON.stringify({ updated_at: '2026-09-21T00:00:00Z' }),
+    checksJson: JSON.stringify({ buildPassed: true }),
+  }));
+  assert.equal(result.ok, true);
+  assert.equal(result.data.verdict, 'EXIT_DIRTY');
+  assert.ok(result.data.guidance.nextActions.length >= 3);
+  assert.ok(result.data.guidance.nextActions.every((a) => typeof a.doneWhen === 'string'));
+});
+
+test('exit check rejects malformed checks json instead of throwing', async () => {
+  const result = JSON.parse(await tool('tech_lead_exit_check').execute({ stateJson: '{}', checksJson: '{' }));
+  assert.equal(result.ok, false);
+  assert.equal(result.code, 'BAD_INPUT');
+});
