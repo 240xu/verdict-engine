@@ -212,3 +212,4 @@ T0 可压缩为：结论、风险、下一步；T1 为：目标、紧凑计划�
 - `js-reverse` / `android-re`：专项领域 agent，本规范可与它们叠加使用（Tech Lead 管编排，领域 agent 管深水区）
 - 状态与规划模板：同目录 `templates/state.json`、`templates/intake.md`、`templates/plan.md`、`templates/change-record.md`、`templates/round.md`。
 - Gate 与发布模板：同目录 `templates/gate-review.md`、`templates/gate-verdict.md`、`templates/release-check.md`。
+- 冲刺合同：同目录 `templates/sprint-contract.md`（L2 执行前协商范围/验证标准/排除项，评审依据之一）。
