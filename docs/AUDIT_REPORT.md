@@ -56,3 +56,22 @@ The skill defaults user data to read-only, requires a recovery path before write
 ## Release Decision
 
 Publication is appropriate as a public documentation and skill repository. Consumers should review the skill before applying it to production or user-data changes, and should treat its templates as guidance until project-specific validation is complete.
+
+## Amendment 2026-09-21 (v5.5.8 · course gap absorption)
+
+Changes audited in this amendment:
+
+- `skill/SKILL.md`: four new clauses — §5.7 failure-feedback three-element format,
+  §7 session-exit five-condition check, §12.6 context budget discipline,
+  Appendix A component retirement clause.
+- `skill/templates/sprint-contract.md`: new template (process observability).
+- `evals/evals.json`: five new scenarios (ids 6-10) covering the new clauses.
+- README (zh/en) and package.json version bumped to 5.5.8; template lists updated.
+
+Motivation: gap analysis against the WalkingLabs "Harness Engineering" course
+(lectures 1-14); the four clauses and the sprint contract close the identified
+process-observability, session-exit, context-budget, and component-lifecycle gaps.
+
+Residual risks: the new eval scenarios still rely on human review of
+`expected_output`; no automated scoring rubric exists yet. The retirement clause
+has no mechanical benchmark harness behind it — execution remains procedural.

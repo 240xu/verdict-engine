@@ -159,6 +159,7 @@ dsh --profile headless --dump-config   # 确认 tech-lead-tools 行已注入
 - `templates/state.json`：可续跑的规范状态投影。
 - `templates/gate-review.md` 与 `templates/gate-verdict.md`：独立评审与裁决记录。
 - `templates/release-check.md`：发布清单、扫描、远程验证与限制记录。
+- `templates/sprint-contract.md`：冲刺合同——执行前协商范围、验证标准与排除项。
 
 ## 范围
 
@@ -177,6 +178,6 @@ dsh --profile headless --dump-config   # 确认 tech-lead-tools 行已注入
 
 ## 版本
 
-当前版本：`v5.5.7`.
+当前版本：`v5.5.8`.
 
 完整运行模型见[技术指南](./docs/TECHNICAL_GUIDE.zh-CN.md)，发布审计见 [docs/AUDIT_REPORT.md](docs/AUDIT_REPORT.md)。

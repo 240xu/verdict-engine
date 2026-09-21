@@ -159,6 +159,7 @@ Use after the L2 scope is clear. Execute only the smallest approved mutation, re
 - `templates/state.json`: canonical resumable state projection.
 - `templates/gate-review.md` and `templates/gate-verdict.md`: independent review and decision records.
 - `templates/release-check.md`: publication inventory, scans, remote verification, and limitations.
+- `templates/sprint-contract.md`: sprint contract — pre-implementation negotiation of scope, verification standard, and exclusions.
 
 ## Scope
 
@@ -177,6 +178,6 @@ The executable skill body (`SKILL.md`) is authored in Simplified Chinese; coding
 
 ## Version
 
-Current version: `v5.5.7`.
+Current version: `v5.5.8`.
 
 See [`docs/TECHNICAL_GUIDE.md`](docs/TECHNICAL_GUIDE.md) for the full operating model and [`docs/AUDIT_REPORT.md`](docs/AUDIT_REPORT.md) for the publication audit.
