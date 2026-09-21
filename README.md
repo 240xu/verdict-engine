@@ -178,6 +178,6 @@ dsh --profile headless --dump-config   # 确认 tech-lead-tools 行已注入
 
 ## 版本
 
-当前版本：`v5.5.9`.
+当前版本：`v5.5.10`.
 
 完整运行模型见[技术指南](./docs/TECHNICAL_GUIDE.zh-CN.md)，发布审计见 [docs/AUDIT_REPORT.md](docs/AUDIT_REPORT.md)。

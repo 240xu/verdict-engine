@@ -86,3 +86,28 @@ has no mechanical benchmark harness behind it — execution remains procedural.
 - Tool surface 22 → 23; count assertions updated across 9 test locations.
 - dsh-themis regenerated via scripts/build-market-package.mjs (9 references).
 - Full suite green: 263 tests, 0 failures.
+
+## Amendment 2026-09-21c (v5.5.10 · evals auto-scoring)
+
+- `evals/score-core.mjs`: pure, dependency-free regex-based scorer
+  (`scoreTranscript`, `scoreAllEvals`). No LLM calls, no I/O in the core.
+- `evals/score.mjs`: CLI wrapper (`--id/--transcript`, `--transcripts-dir`,
+  `--transcripts-json`); exit code 0 iff every scored eval passes.
+- `evals/evals.json`: all 10 scenarios now carry a `checks[]` array
+  (mustMatch/mustNotMatch regex predicates), replacing pure human review of
+  `expected_output` with a machine-checkable pass/fail per scenario.
+- `tests/evals-score.test.js`: 14 tests, including a regression guard that
+  every pattern in evals.json compiles as a valid JS RegExp (this guard
+  caught and fixed 15 patterns that had been written with PCRE-style
+  `(?i)` inline flags, which JS RegExp does not support — those checks
+  would have thrown INVALID_PATTERN on every run without it).
+
+Motivation: closes the residual risk noted in the 2026-09-21 amendment
+("no automated scoring rubric exists yet" — Harness Engineering lecture 11's
+point that evaluation must be reproducible, not just described in prose).
+
+Residual risks: checks are regex presence/absence predicates over a
+transcript the caller supplies; they do not themselves run the agent or
+verify semantic correctness beyond pattern matching. Scoring an eval still
+requires a human or harness to capture the transcript first. The retirement
+clause (eval 10) still has no mechanical benchmark harness behind it.

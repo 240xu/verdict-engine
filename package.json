@@ -1,6 +1,6 @@
 {
   "name": "nomos-skill",
-  "version": "5.5.9",
+  "version": "5.5.10",
   "description": "Nomos — evidence-driven planning & safe change-control skill for any agent environment; prose edition of the verdict-engine governance layer",
   "license": "MIT",
   "repository": {
