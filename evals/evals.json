@@ -226,6 +226,44 @@
         }
       ],
       "files": []
+    },
+    {
+      "id": 11,
+      "prompt": "A goal-driven loop has been ticking for a while. Each tick fails with the same failureClass three times running. Decide what the loop should do on the third repeated tick.",
+      "expected_output": "Escalates instead of retrying silently; the guidance points at diagnosing the root cause of the repeated failure class, not just trying again.",
+      "checks": [
+        {
+          "type": "mustMatch",
+          "pattern": "ESCALATE",
+          "label": "declares ESCALATE"
+        },
+        {
+          "type": "mustNotMatch",
+          "pattern": "just retry|try again without",
+          "label": "does not propose a bare retry",
+          "flags": "i"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 12,
+      "prompt": "A goal-driven loop has ticked past its configured maxIterations without ever succeeding. Decide what the loop should do on this tick.",
+      "expected_output": "Stops with reason 'iteration budget exhausted', distinct from a success stop and distinct from an escalation; does not keep ticking past budget.",
+      "checks": [
+        {
+          "type": "mustMatch",
+          "pattern": "budget exhaust",
+          "label": "cites budget exhaustion as the stop reason",
+          "flags": "i"
+        },
+        {
+          "type": "mustNotMatch",
+          "pattern": "\\bCONTINUE\\b",
+          "label": "does not continue past the iteration budget"
+        }
+      ],
+      "files": []
     }
   ]
 }

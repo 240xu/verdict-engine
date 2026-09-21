@@ -1,6 +1,6 @@
 {
   "name": "@240xu/dsh-tech-lead-core",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Pure, dependency-free validators for the tech-lead lifecycle (state, evidence, plan, gate, release, install audit)",
   "license": "MIT",
   "type": "module",

@@ -111,3 +111,42 @@ transcript the caller supplies; they do not themselves run the agent or
 verify semantic correctness beyond pattern matching. Scoring an eval still
 requires a human or harness to capture the transcript first. The retirement
 clause (eval 10) still has no mechanical benchmark harness behind it.
+
+## Amendment 2026-09-21d (v5.5.11 · nomos-loop v1 — governed loop-tick)
+
+- `packages/dsh-tech-lead-core/src/loop-tick.js`: pure function `loopTick`
+  mechanizing existing §4.4/§4.9 planning-loop prose (same failure class
+  three ticks running escalates; exceeding maxIterations, default 20,
+  stops on budget exhaustion; success stops as goal achieved).
+- New tool `tech_lead_loop_tick` (dsh-themis 1.5.0, core 0.3.2): registered
+  alongside `progress_decide`/`exit_check`; ESCALATE carries deterministic
+  guidance.nextActions. Tool surface 23 → 24; count assertions updated
+  across the same 9 locations touched in the exit_check amendment.
+- `skill/templates/loop-spec.md` + SKILL.md §4.10: documents the
+  composition pattern (external Automation ticks → loop_tick decides
+  whether the loop continues → progress_decide decides the action within
+  the tick → caller persists updatedLoopState) and states explicitly that
+  this package never runs the trigger — respects the existing "no writes,
+  no subprocesses, no network" charter (see design spec
+  docs/superpowers/specs/2026-09-21-nomos-loop-design.md for the scope
+  decision and rejected alternatives).
+- `evals/evals.json`: two new scenarios (ids 11-12, budget exhaustion and
+  escalation), machine-checkable from the start.
+- Process note: the same PCRE-style `(?i)` mistake fixed in the prior
+  amendment recurred while authoring evals 11-12 and was caught immediately
+  by the regression guard added in that amendment — direct evidence the
+  guard earns its keep.
+
+Motivation: closes the "调度层缺 glue" gap named at the end of the prior
+session (Harness Engineering lecture 13's /goal architecture — goal +
+verification + stop condition — needed a mechanical stop/escalate judge
+across independent tick invocations, not just prose trusted to be
+remembered).
+
+Residual risks: no scheduler ships with this package by design; a caller
+that never wires an Automation to `loop_tick` gets no enforcement at all —
+the mechanism is opt-in glue, not a runtime guarantee. `loopState` integrity
+depends entirely on the caller's own persistence being correct; this
+package cannot detect a caller that silently drops or corrupts it between
+ticks (partially mitigated by state_validate's schema checks if the caller
+stores loopState inside state.json, but that composition is not enforced).

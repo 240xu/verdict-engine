@@ -83,7 +83,7 @@ The installer is idempotent: repeated runs back up existing files as `*.bak-<tim
 dsh plugin --profile headless add dsh-themis
 ```
 
-23 registered entry points in a single artifact: 22 read-only governance tools plus a capability-discovery tool (`tech_lead_capabilities`) that lists only what this bundle actually registers (the original nine audits plus context validation, evidence graph/freshness analysis, progress decisions, critical-path/impact analysis, resume reconciliation, gate planning/aggregation/reopen checks, mutation preview, and the five-condition session exit check). Tools compute over caller-supplied JSON only — no filesystem writes, no subprocesses, no network access. The earlier split packages (`dsh-tech-lead-{core,plugin,bundle}`) are deprecated in favor of this one. Source checkouts remain supported: build via `node scripts/build-market-package.mjs` then `dsh plugin add packages/dsh-themis`. The root npm package distributes the skill and installer only.
+24 registered entry points in a single artifact: 23 read-only governance tools plus a capability-discovery tool (`tech_lead_capabilities`) that lists only what this bundle actually registers (the original nine audits plus context validation, evidence graph/freshness analysis, progress decisions, critical-path/impact analysis, resume reconciliation, gate planning/aggregation/reopen checks, mutation preview, the five-condition session exit check, and the governed loop-tick decision). Tools compute over caller-supplied JSON only — no filesystem writes, no subprocesses, no network access. The earlier split packages (`dsh-tech-lead-{core,plugin,bundle}`) are deprecated in favor of this one. Source checkouts remain supported: build via `node scripts/build-market-package.mjs` then `dsh plugin add packages/dsh-themis`. The root npm package distributes the skill and installer only.
 
 **Two artifacts, one rulebook:** `tech-lead-skill` is the conservative, broadly-compatible prose spec — install it into any agent environment (opencode, Claude Code, Codex) and nothing else is required. **`dsh-themis` is the DSH-plugin specialized edition**: the same judgment layer plus a machine-checked read-only runtime — schema-declared `protocolJson` negotiation on all 22 tools (bare legacy by default, explicit v1/v2 envelopes, fail-closed on unknown selections), one-way state→context-v2 projection that never invents identity or provenance, strict/compat input handling, and stable v2 envelopes (`findings`, `guidance`, `meta.complete`, `meta.outputProtocol`).
 
@@ -178,6 +178,6 @@ The executable skill body (`SKILL.md`) is authored in Simplified Chinese; coding
 
 ## Version
 
-Current version: `v5.5.10`.
+Current version: `v5.5.11`.
 
 See [`docs/TECHNICAL_GUIDE.md`](docs/TECHNICAL_GUIDE.md) for the full operating model and [`docs/AUDIT_REPORT.md`](docs/AUDIT_REPORT.md) for the publication audit.

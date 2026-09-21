@@ -3,7 +3,7 @@ name: tech-lead
 description: 用于软件、基础设施、研究和运维中的多步、跨边界或有状态工程交付：项目规划、架构选择、跨模块实现、部署、迁移、发布、恢复、重构、长期运行与跨会话续跑。涉及不可逆/生产变更、回滚验证、真实环境对账、发布安全或项目级交付治理时优先加载，即使用户没有说“项目”或“Tech Lead”。不要仅因一次性小修复、单文件编辑、普通解释、单次测试或只读代码审查而自动加载，除非用户明确要求项目级计划或本规范。
 ---
 
-# Tech Lead · 自主演进规划与交付规范 v5.5.10
+# Tech Lead · 自主演进规划与交付规范 v5.5.11
 
 > 双层架构声明：本文件是**判断层**（自由裁量域）。其中可机械判定的不变量（Gate 前置校验、
 > 证据锚点存在性、分级判定器、状态机转换有效性）为未来 **MCP 工具化候选**——
@@ -126,6 +126,11 @@ M0 前列 ≤5 个关键假设请用户确认；目标、Non-Goals 和不可逆�
 ### 4.9 停滞断路器
 满足任一条件即暂停装饰性工作并重新评估：连续两轮没有新增 E2 以上证据；关键路径连续两轮没有缩短；同一假设被重复使用却没有验证设计；计划变化很多但目标账本没有推进；新增工作量超过完成工作量且没有正式 Scope 变更；`SCOPE-DOWN` 后未重写目标、DoD 和 Non-Goals。只能选择新的证伪实验、`PAUSE`、`PIVOT` 或 `STOP`。重新评估时先把可疑变量列成矩阵逐一系统性证伪，避免在单一假设上反复打转。
 
+### 4.10 治理循环（nomos-loop，v5.5.11）
+本规范不运行任何调度器——`dsh-themis` 的宪法是无写入、无子进程、无网络。真正的定时触发（cron / DSH routine / GitHub Action）由调用方自行搭建；本节只把"这一轮该不该继续"这件事从散文纪律变成一个可复用的机械判定。
+组合方式：外部 Automation 每次触发都是一个独立进程，只能靠调用方持久化的状态延续记忆（同 §5.6/§7 的外部状态原则）——`tech_lead_loop_tick` 接收上一轮持久化的 `loopState` 与本轮 `observation`（success/failureClass），返回 `CONTINUE`/`STOP`/`ESCALATE` 与更新后的 `loopState`；调用方把 `updatedLoopState` 写回持久化（如 `state.json` 新增可选子对象 `loop`，schema v1 对未知字段的保留规则天然兼容，无需迁移）；`CONTINUE` 时在本轮内继续调用 `tech_lead_progress_decide` 做具体动作判断；`STOP`（成功或预算耗尽）与 `ESCALATE`（同类失败连续三次，机械化 §4.4/§4.9 的规则）都必须终止自动重试并交回人工。
+`loop-spec.md` 模板记录 Goal / 验证命令 / 停止条件三要素（对齐 /goal 的最小 loop 结构）与 Max iterations（默认 20，缺省即按此值 fail-closed，不做无限循环）、Trigger（仅作说明，本包不执行）、Escalation contact。
+
 ## §5 执行验证与证据纪律
 1. 证据分级：`E0` 模型推断（只能提出假设）；`E1` 静态阅读/grep/配置检查（证明文本或结构存在）；`E2` 本地命令/单元测试（证明局部行为）；`E3` 集成测试/真实进程/真实接口（证明系统链路）；`E4` 用户验收/真实业务结果/生产观察（证明用户目标）。
 2. Gate 通过必须标注证据级别、来源、时间、范围、复现方法、可信度和失效条件。高风险改动不得仅凭 E1/E2 完成；用户目标不得仅凭局部测试完成。环境、依赖或配置变化会使相关证据降为 [待复验]。
@@ -217,3 +222,4 @@ T0 可压缩为：结论、风险、下一步；T1 为：目标、紧凑计划�
 - 状态与规划模板：同目录 `templates/state.json`、`templates/intake.md`、`templates/plan.md`、`templates/change-record.md`、`templates/round.md`。
 - Gate 与发布模板：同目录 `templates/gate-review.md`、`templates/gate-verdict.md`、`templates/release-check.md`。
 - 冲刺合同：同目录 `templates/sprint-contract.md`（L2 执行前协商范围/验证标准/排除项，评审依据之一）。
+- 循环规约：同目录 `templates/loop-spec.md`（§4.10 治理循环的目标/验证/停止条件三要素，外部 Automation 接线说明）。
