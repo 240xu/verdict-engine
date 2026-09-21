@@ -4,8 +4,8 @@ import { getCapabilities } from '../src/capabilities.js';
 
 test('capability catalog is unique and explicitly read-only', () => {
   const capabilities = getCapabilities();
-  assert.equal(capabilities.length, 23);
-  assert.equal(new Set(capabilities.map((item) => item.name)).size, 23);
+  assert.equal(capabilities.length, 24);
+  assert.equal(new Set(capabilities.map((item) => item.name)).size, 24);
   for (const item of capabilities) {
     assert.equal(item.sideEffects, false);
     assert.equal(typeof item.version, 'string');
@@ -20,6 +20,6 @@ test('capability catalog returns a defensive copy', () => {
   first[0].name = 'mutated';
   first.push({ name: 'extra' });
   const second = getCapabilities();
-  assert.equal(second.length, 23);
+  assert.equal(second.length, 24);
   assert.notEqual(second[0].name, 'mutated');
 });

@@ -38,7 +38,7 @@ const WIRE = [
 
 test('every registered tool declares protocolJson in its parameter schema', () => {
   const tools = makeTools();
-  assert.equal(tools.length, 23);
+  assert.equal(tools.length, 24);
   const missing = tools.filter((t) => !t.parameters?.protocolJson);
   assert.deepEqual(missing.map((t) => t.name), [], 'tools missing protocolJson parameter');
 });

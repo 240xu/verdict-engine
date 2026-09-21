@@ -99,3 +99,47 @@ test('exit check rejects malformed checks json instead of throwing', async () =>
   assert.equal(result.ok, false);
   assert.equal(result.code, 'BAD_INPUT');
 });
+
+test('loop tick tool is registered', () => {
+  assert.ok(tool('tech_lead_loop_tick'));
+});
+
+test('loop tick continues under budget with no repeated failure class', async () => {
+  const result = JSON.parse(await tool('tech_lead_loop_tick').execute({
+    loopSpecJson: JSON.stringify({ maxIterations: 20 }),
+    loopStateJson: JSON.stringify({ iteration: 0, sameFailureClassCount: 0, lastFailureClass: null }),
+    observationJson: JSON.stringify({ success: false, failureClass: 'network' }),
+  }));
+  assert.equal(result.ok, true);
+  assert.equal(result.data.decision, 'CONTINUE');
+  assert.equal(result.data.updatedLoopState.iteration, 1);
+});
+
+test('loop tick escalates on third repeated failure class and carries guidance', async () => {
+  const result = JSON.parse(await tool('tech_lead_loop_tick').execute({
+    loopSpecJson: '{}',
+    loopStateJson: JSON.stringify({ iteration: 2, sameFailureClassCount: 2, lastFailureClass: 'auth' }),
+    observationJson: JSON.stringify({ success: false, failureClass: 'auth' }),
+  }));
+  assert.equal(result.ok, true);
+  assert.equal(result.data.decision, 'ESCALATE');
+  assert.ok(result.data.guidance.nextActions.length >= 1);
+});
+
+test('loop tick stops on success', async () => {
+  const result = JSON.parse(await tool('tech_lead_loop_tick').execute({
+    loopSpecJson: '{}',
+    loopStateJson: '{}',
+    observationJson: JSON.stringify({ success: true }),
+  }));
+  assert.equal(result.data.decision, 'STOP');
+  assert.equal(result.data.reason, 'goal achieved');
+});
+
+test('loop tick rejects malformed loop state json instead of throwing', async () => {
+  const result = JSON.parse(await tool('tech_lead_loop_tick').execute({
+    loopSpecJson: '{}', loopStateJson: '{', observationJson: '{}',
+  }));
+  assert.equal(result.ok, false);
+  assert.equal(result.code, 'BAD_INPUT');
+});
