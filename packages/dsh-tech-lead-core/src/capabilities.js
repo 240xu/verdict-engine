@@ -12,6 +12,7 @@ const RAW = [
   ['tech_lead_release_audit', 'release', 'json-string+csv', 'high', 'release', ['FileInventory'], ['AuditFindings'], [], 'A truncated audit fails closed; partial output never certifies a release.'],
   ['tech_lead_install_audit', 'installation', 'json-string+csv', 'high', 'release', ['Manifest'], ['InstallAudit'], [], 'Unmanaged files drift silently unless audited against the manifest.'],
   ['tech_lead_resume_card', 'reconcile', 'json-string+primitive', 'medium', 'resume', ['StateV1'], ['ResumeCard'], ['tech_lead_progress_decide'], 'Without nowIso the card runs on the runtime clock and says so.'],
+  ['tech_lead_exit_check', 'reconcile', 'json-string', 'medium', 'exit', ['StateV1', 'ExitChecks'], ['ExitCheckReport'], ['tech_lead_state_validate'], 'Unknown check results fail closed; a clean exit is proven, not assumed.'],
   ['tech_lead_context_validate', 'context', 'json-string', 'medium', 'starter', ['ContextSnapshot'], ['ValidationReport'], ['tech_lead_evidence_graph_lint'], 'The validated inline snapshot stays the single source of truth.'],
   ['tech_lead_evidence_graph_lint', 'evidence', 'json-string', 'high', 'evidence', ['ContextSnapshot'], ['GraphReport'], ['tech_lead_evidence_freshness'], 'Broken references poison every downstream freshness verdict.'],
   ['tech_lead_evidence_freshness', 'evidence', 'json-string', 'high', 'evidence', ['ContextSnapshot'], ['FreshnessReport'], ['tech_lead_progress_decide'], 'Stale evidence pauses progress until refreshed against the fingerprint.'],

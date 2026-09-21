@@ -149,7 +149,58 @@ export function registerProgressTools(defineTool, core) {
       return renderEnvelope(applyProtocol(okEnvelope('resume_reconcile', { drift: true, changedKeys }), args, 'resume_reconcile'));
     });
   });
+  register('tech_lead_exit_check', 'Decide whether a session may exit clean (SKILL §7): five conditions — build passes, verification green incl. pre-existing tests, progress persisted (state.updated_at non-empty), debug artifacts cleaned, startup path usable. Unreported checks fail closed (status "unknown" counts as unmet); every valid analysis returns ok:true with data.verdict EXIT_CLEAN|EXIT_DIRTY; ok:false is reserved for malformed or over-budget input. optionsJson supports {applicable?:string[], guidanceMode?:("strict"|"heuristic")}; dirty verdicts carry data.guidance.nextActions with per-condition doneWhen predicates.', {
+    stateJson: { type: 'string', required: true, description: 'tech-lead state snapshot JSON text (at minimum {updated_at})' },
+    checksJson: { type: 'string', description: 'caller-observed booleans JSON text: {buildPassed?,verificationGreen?,debugArtifactsClean?,startupPathUsable?}' },
+    optionsJson: { type: 'string', description: 'optional JSON text ({applicable?:string[], guidanceMode?:string})' },
+  }, async (args) => {
+    return runGuarded('exit_check', () => {
+      const input = parseJsonFields(args ?? {}, ['stateJson', 'checksJson']);
+      if (!input.ok) return renderEnvelope(applyProtocol(errorEnvelope('exit_check', input.code ?? 'BAD_INPUT', input.errors), args, 'exit_check'));
+      let options = {};
+      let mode = 'strict';
+      if (args.optionsJson != null && args.optionsJson !== '') {
+        const parsedOptions = parseOptions(args.optionsJson, 'exit_check');
+        if (!parsedOptions.ok) return renderEnvelope(applyProtocol(errorEnvelope('exit_check', parsedOptions.code ?? 'BAD_INPUT', parsedOptions.errors), args, 'exit_check'));
+        options = parsedOptions.value;
+        if (options.guidanceMode) mode = options.guidanceMode;
+      }
+      const result = core.exitCheck(input.values.stateJson, input.values.checksJson ?? {}, options);
+      if (result.verdict === 'EXIT_CLEAN') return renderEnvelope(applyProtocol(okEnvelope('exit_check', result), args, 'exit_check'));
+      const enriched = { ...result, guidance: buildExitGuidance(result, mode) };
+      return renderEnvelope(applyProtocol(okEnvelope('exit_check', enriched), args, 'exit_check'));
+    });
+  });
   return output;
+}
+
+const EXIT_FIX = {
+  build: 'Run the build command and record its observed result as checksJson.buildPassed.',
+  verification: 'Run the full verification suite including pre-existing tests and record checksJson.verificationGreen.',
+  progress_persisted: 'Persist progress to machine-readable state (non-empty state.updated_at) before exiting.',
+  artifacts_clean: 'Remove debug artifacts (temporary logs, commented-out code, TODO markers) and record checksJson.debugArtifactsClean.',
+  startup_path: 'Verify a fresh session can start from the repository alone and record checksJson.startupPathUsable.',
+};
+
+function buildExitGuidance(result, mode) {
+  const actions = result.conditions
+    .filter((c) => c.status === 'fail' || c.status === 'unknown')
+    .map((c) => makeAction({
+      kind: 'hygiene',
+      targetId: c.id,
+      reasonCodes: ['EXIT_DIRTY'],
+      findingRef: `conditions/${c.id}`,
+      action: EXIT_FIX[c.id] ?? `Satisfy condition "${c.id}" (${c.label}).`,
+      doneWhen: c.id === 'progress_persisted'
+        ? 'state.updated_at is a non-empty string at exit time'
+        : `checksJson.${c.id === 'build' ? 'buildPassed' : c.id === 'verification' ? 'verificationGreen' : c.id === 'artifacts_clean' ? 'debugArtifactsClean' : 'startupPathUsable'} is true on the next exit_check call`,
+    }));
+  return normalizeGuidance({
+    mode,
+    outcome: 'PAUSE',
+    meaning: 'Session exit is not clean: unmet conditions must be satisfied or explicitly recorded as residual risk with a PAUSE.',
+    actions,
+  });
 }
 
 function computeChangedKeys(a, b) {

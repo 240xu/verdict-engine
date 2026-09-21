@@ -7,6 +7,7 @@ import {
   validateContext, evidenceGraphLint, evidenceFreshness,
   progressDecide, criticalPath, changeImpact,
   gatePlan, gateAggregate, gateReopen, previewMutation,
+  exitCheck,
 } from './core/index.js';
 import { registerTools } from './tools.js';
 
@@ -27,6 +28,7 @@ export function apply(ctx) {
     validateContext, evidenceGraphLint, evidenceFreshness,
     progressDecide, criticalPath, changeImpact,
     gatePlan, gateAggregate, gateReopen, previewMutation,
+    exitCheck,
     getCapabilities,
   })) {
     ctx.tools.register(tool);

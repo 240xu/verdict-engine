@@ -20,3 +20,5 @@ export { inspectBounded, parseBoundedJson, getBudgetProfile } from './budgets.js
 export { makeAction, normalizeGuidance } from './guidance.js';
 export { validateContextV2, projectStateToContextV2 } from './context-v2.js';
 export { parseProtocolOptions, envelopeToV2 } from './protocol-v2.js';
+
+export { exitCheck } from './exit-check.js';

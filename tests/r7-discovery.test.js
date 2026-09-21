@@ -9,7 +9,7 @@ const REGISTERED = makeTools().map((t) => t.name);
 
 test('capability metadata v2 carries guidance fields with registered-only nextTools', () => {
   const caps = getCapabilities({ registeredNames: REGISTERED });
-  assert.equal(caps.length, 22);
+  assert.equal(caps.length, 23);
   const aggregate = caps.find((c) => c.name === 'tech_lead_gate_aggregate');
   assert.equal(aggregate.recipe, 'gate');
   assert.ok(Array.isArray(aggregate.requires) && aggregate.requires.includes('GatePlan'));
@@ -31,7 +31,7 @@ test('discovery tool is registered and returns the bounded catalog', async () =>
   const out = JSON.parse(await discovery.execute({}));
   assert.equal(out.ok, true);
   assert.equal(out.code, 'OK');
-  assert.equal(out.data.capabilities.length, 22);
+  assert.equal(out.data.capabilities.length, 23);
 });
 
 test('recipe and domain filters narrow the catalog deterministically', async () => {

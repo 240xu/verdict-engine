@@ -8,13 +8,13 @@ import { readFileSync } from 'node:fs';
 
 const A = '../packages/dsh-themis/src/';
 
-test('artifact registers exactly 22 tools (governance + discovery) with a live core surface', async () => {
+test('artifact registers exactly 23 tools (governance + discovery) with a live core surface', async () => {
   const [{ registerTools }, core] = await Promise.all([
     import(A + 'tools.js'),
     import(A + 'core/index.js'),
   ]);
   const tools = registerTools((d) => d, core);
-  assert.equal(tools.length, 22);
+  assert.equal(tools.length, 23);
 });
 
 test('artifact envelope keeps contract meta authoritative; honest determinism allowed', async () => {
@@ -121,7 +121,7 @@ test('artifact R8.1: protocolJson declared everywhere + legacy opt-in + v2 metad
     import(A + 'core/index.js'),
   ]);
   const tools = registerTools((d) => d, core);
-  assert.equal(tools.length, 22);
+  assert.equal(tools.length, 23);
   assert.deepEqual(tools.filter((t) => !t.parameters?.protocolJson).map((t) => t.name), []);
 
   const state = readFileSync(new URL('./fixtures/state-v1/normal.json', import.meta.url), 'utf8');
