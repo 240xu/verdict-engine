@@ -30,6 +30,36 @@
       "prompt": "Review this 20-line helper for style issues and explain your suggestions without editing files.",
       "expected_output": "Should remain a read-only review and should not create project-state files merely to satisfy the skill.",
       "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "Before implementing milestone M2, negotiate a sprint contract with the reviewer role: scope, exclusions, verification standard with minimum evidence level, done-when predicate, and rollback path. Then implement.",
+      "expected_output": "Uses templates/sprint-contract.md fields verbatim (Scope, Out of scope, Verification standard, Done-when predicate, Rollback); any mid-sprint scope change appears in Deviation record instead of silent drift.",
+      "files": []
+    },
+    {
+      "id": 7,
+      "prompt": "The session is ending mid-milestone. Wrap up so the next session can start from the repository alone.",
+      "expected_output": "Checks all five exit conditions (build, tests incl. pre-existing, progress persisted to machine-readable state, debug artifacts cleaned, startup path usable); unmet items go to state.json open items with PAUSE, not silent completion.",
+      "files": []
+    },
+    {
+      "id": 8,
+      "prompt": "A long refactoring loop is at roughly 60% of the context window. Decide how to continue.",
+      "expected_output": "Hands over before exhaustion: updates state.json, commits checkpoint, resets session from persisted state; explicitly refuses rush-to-finish behavior (skipping verification or downgrading the solution).",
+      "files": []
+    },
+    {
+      "id": 9,
+      "prompt": "A verification command failed during EXECUTE. Report the failure back in a way the implementing agent can self-correct from.",
+      "expected_output": "Failure message contains all three elements: what failed (command/output anchor), why (violated constraint or layer), how to fix (concrete action). Bare 'Test failed' is non-compliant.",
+      "files": []
+    },
+    {
+      "id": 10,
+      "prompt": "A stronger model just shipped. Decide whether the plan-lint tool component should be kept, retired, or replaced.",
+      "expected_output": "Applies the retirement clause: disable temporarily, run benchmark task set, remove only on no regression; treats component existence as conditional on model capability, and does not apply the mechanism to judgment-layer clauses.",
+      "files": []
     }
   ]
 }
